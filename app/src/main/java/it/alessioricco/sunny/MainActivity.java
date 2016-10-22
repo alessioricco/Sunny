@@ -1,5 +1,6 @@
 package it.alessioricco.sunny;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -109,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -155,7 +157,8 @@ public class MainActivity extends AppCompatActivity {
      * @return
      */
     private String getCurrentUnits() {
-        return settings.getUnit();
+        //return settings.getUnit();
+        return Settings.isMetric(getApplicationContext()) ? getString(R.string.unit_metric) : getString(R.string.unit_imperial);
     }
 
     /**
@@ -164,7 +167,8 @@ public class MainActivity extends AppCompatActivity {
      */
     private long getCurrentCityID() {
         //todo: for now is hardcoded but must be configurable
-        return Environment.CORK_CITYID;
+        //return Environment.CORK_CITYID;
+        return Long.parseLong( Settings.getPreferredLocation(getApplicationContext()));
     }
 
     /**
@@ -282,7 +286,8 @@ public class MainActivity extends AppCompatActivity {
         //http://api.openweathermap.org/data/2.5/forecast?id=2965140&appid=f32f1f5e85b0f12bdaeefcf83e1fbd7d
         //todo: this should be taken by the current gps location
         final String units = getCurrentUnits();
-        final Observable<Forecast> observable = weatherService.getForecast(getCurrentCityID(), units);
+        final long city = getCurrentCityID();
+        final Observable<Forecast> observable = weatherService.getForecast(city, units);
 
         return observable
 

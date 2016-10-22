@@ -1,5 +1,11 @@
 package util;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
+import it.alessioricco.sunny.R;
+
 /**
  * Created by alessioricco on 22/10/2016.
  *
@@ -16,6 +22,7 @@ public class Environment {
 
     //todo: implement a geolocation service instead of use a predefined value
     public static final long CORK_CITYID = 2965140;
+
 
 
 }
