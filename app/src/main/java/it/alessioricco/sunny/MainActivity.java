@@ -56,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
     @InjectView(R.id.vertical_layout_temperatures)
     LinearLayout linearLayoutTemperatures;
 
+    @InjectView(R.id.ivBigImage)
+    ImageView toolbarImage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -182,6 +185,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * based on the current city id (or name+country)
+     * it should find a good background image to display
+     * todo: an API for that should be find
+     * @param forecast
+     * @return
+     */
+    private String getCurrentCityBackground(final Forecast forecast) {
+        return "http://d2f0ora2gkri0g.cloudfront.net/bkpam2216982_cork-city.jpg";
+    }
+
+
+    /**
      * display forecasts
      * @param forecast
      */
@@ -195,6 +210,12 @@ public class MainActivity extends AppCompatActivity {
         // show the forecasts on screen
         final String title = String.format("%s %s", forecast.getCity().getName(), formatTemperature(temp));
         toolbarLayout.setTitle(title);
+
+        //todo: we have to find a service with better images (weather or city)
+        String url = getCurrentCityBackground(forecast);
+        Picasso.with(getApplicationContext())
+                .load(url)
+                .into(toolbarImage);
 
         this.linearLayoutTemperatures.removeAllViews();
         for(ForecastItem item: forecast.getList()) {
@@ -221,6 +242,13 @@ public class MainActivity extends AppCompatActivity {
                 String tempWeather = item.getWeather().get(0).getDescription();
                 temperatureWeather.setText(String.format("%s",tempWeather));
             }
+
+            final ImageView temperatureIcon = (ImageView) container.findViewById(R.id.temperature_icon);
+            url = String.format("%s%s.png", Environment.OPENWEATHER_IMG_URL, item.getWeather().get(0).getIcon());
+            //TODO: use placeholders
+            Picasso.with(getApplicationContext())
+                    .load(url)
+                    .into(temperatureIcon);
 
             this.linearLayoutTemperatures.addView(container);
         }

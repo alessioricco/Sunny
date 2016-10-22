@@ -17,3 +17,7 @@ things to do with more time
 - we should read the current weather api and then compose the result with the forecast
 - the floating icon is used to toggle between F and C
 drawables are taken from https://materialdesignicons.com/
+- add placeholders for picasso image download
+- methods as getCurrentCityBackground(), getCurrentCityID() should be based on
+services that retrieve Observable Objects that should be combined for deliver the desired results
+- the bar color should change color based on the weather
