@@ -6,3 +6,12 @@ Some notes about the source code
 then if I will have time, I will add other services for geolocation and reverse geocoding
 - there is an official list of cities from the API. is a downloadable file in json format.
 I will put in the res/raw folder for future use
+
+
+things to do with more time
+- a good class for exceptions
+- progress bars
+- manage current position from network or gps
+- city selection with autocomplete
+- setting view for selection of units (imperial/metric)
+- we should read the current weather api and then compose the result with the forecast

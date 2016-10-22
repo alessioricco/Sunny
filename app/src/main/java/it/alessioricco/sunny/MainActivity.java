@@ -12,9 +12,11 @@ import android.view.MenuItem;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
+import butterknife.InjectView;
 import dagger.ObjectGraph;
 import it.alessioricco.sunny.injection.ObjectGraphSingleton;
 import it.alessioricco.sunny.models.Forecast;
+import it.alessioricco.sunny.models.Settings;
 import it.alessioricco.sunny.services.OpenWeatherService;
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Observable;
@@ -33,6 +35,15 @@ public class MainActivity extends AppCompatActivity {
 
     protected CompositeSubscription compositeSubscription = new CompositeSubscription();
 
+    //todo: in future they should be taken from internal storage
+    private Settings settings = new Settings();
+
+    @InjectView(R.id.fab)
+    android.support.design.widget.FloatingActionButton fab;
+
+    @InjectView(R.id.toolbar_layout)
+    android.support.design.widget.CollapsingToolbarLayout toolbarLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +57,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
+                toggleUnit();
+                compositeSubscription.add(asyncUpdateForecast());
+
             }
         });
 
@@ -53,6 +67,10 @@ public class MainActivity extends AppCompatActivity {
         ObjectGraph objectGraph = ObjectGraphSingleton.getInstance();
         objectGraph.inject(this);
         ButterKnife.inject(this);
+
+        //begin of the custom code
+        settings.setUnit(getString(R.string.unit_imperial));
+        toggleUnit();
     }
 
     @Override
@@ -92,19 +110,74 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private String getCurrentUnits() {
-        return "metric";
+    private void toggleUnit() {
+
+        int temperatureId;
+        int unitId;
+
+        // TODO: we can optimize this if
+        if (getCurrentUnits() == getString(R.string.unit_metric)){
+            unitId = R.string.unit_imperial;
+            temperatureId = R.drawable.temperature_fahrenheit;
+        } else {
+            unitId = R.string.unit_metric;
+            temperatureId = R.drawable.temperature_celsius;
+        }
+        settings.setUnit(getString(unitId));
+        if (fab!= null) {
+            fab.setImageResource(temperatureId);
+        }
+
     }
 
+    /**
+     * get the current unit from setting
+     * @return
+     */
+    private String getCurrentUnits() {
+        return settings.getUnit();
+    }
+
+    /**
+     * get the current selected city
+     * @return
+     */
     private long getCurrentCityID() {
+        //todo: for now is hardcoded but must be configurable
         return Environment.CORK_CITYID;
     }
 
+    /**
+     * format the temperature using the current selected unit
+     * @param temp
+     * @return
+     */
+    private String formatTemperature(long temp) {
+        return String.format("%d%s", temp, getCurrentUnitsToDisplay());
+    }
+
+    /**
+     * show degrees with C or F (depend by the settings)
+     * @return
+     */
+    private String getCurrentUnitsToDisplay(){
+        return (getCurrentUnits() == getString(R.string.unit_metric)) ? getString(R.string.degree_centigrads) : getString(R.string.degree_farenheit);
+    }
+
+    /**
+     * display forecasts
+     * @param forecast
+     */
     private void updateForecast(final Forecast forecast) {
         if (forecast == null) return;
+        if (forecast.getList() == null) return;
 
-        String city = forecast.getCity().getName();
-        System.out.println(city);
+        // this value should be retrieved by another api call (current weather)
+        final long temp = (long)forecast.getList().get(0).getMain().getTemp();
+
+        // show the forecasts on screen
+        final String title = String.format("%s %s", forecast.getCity().getName(), formatTemperature(temp));
+        toolbarLayout.setTitle(title);
     }
 
 
@@ -153,6 +226,7 @@ public class MainActivity extends AppCompatActivity {
                             HttpException response = (HttpException) e;
                             int code = response.code();
                             //TODO: add a toast
+                            System.err.println(response.message());
                             //TODO: retry if it doesn't works
                         }
                     }
