@@ -14,9 +14,16 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import dagger.ObjectGraph;
 import it.alessioricco.sunny.injection.ObjectGraphSingleton;
+import it.alessioricco.sunny.models.Forecast;
 import it.alessioricco.sunny.services.OpenWeatherService;
+import retrofit2.adapter.rxjava.HttpException;
+import rx.Observable;
+import rx.Subscriber;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
+import util.Environment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -85,21 +92,75 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private String getCurrentUnits() {
+        return "metric";
+    }
+
+    private long getCurrentCityID() {
+        return Environment.CORK_CITYID;
+    }
+
+    private void updateForecast(final Forecast forecast) {
+        if (forecast == null) return;
+
+        String city = forecast.getCity().getName();
+        System.out.println(city);
+    }
+
+
+    /**
+     * show the progress bar
+     */
+    private void startProgress() {
+        //todo: to be implemented
+    }
+
+    /**
+     * hide the progress bar
+     */
+    private void endProgress() {
+        //todo: to be implemented
+    }
+
     /**
      * call the service, retrieve the results and draw the results
      * @return
      */
     private Subscription asyncUpdateForecast(){
-        return new Subscription() {
-            @Override
-            public void unsubscribe() {
+        //todo the progress must me show only the first time, then we should use another thing
+        startProgress();
 
-            }
+        //http://api.openweathermap.org/data/2.5/forecast?id=2965140&appid=f32f1f5e85b0f12bdaeefcf83e1fbd7d
+        //todo: this should be taken by the current gps location
+        final String units = getCurrentUnits();
+        final Observable<Forecast> observable = weatherService.getForecast(getCurrentCityID(), units);
 
-            @Override
-            public boolean isUnsubscribed() {
-                return false;
-            }
-        };
+        return observable
+
+                .subscribeOn(Schedulers.io()) // optional if you do not wish to override the default behavior
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Forecast>() {
+                    @Override
+                    public void onCompleted() {
+                        // todo hide the spinner
+                        endProgress();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        // cast to retrofit.HttpException to get the response code
+                        if (e instanceof HttpException) {
+                            HttpException response = (HttpException) e;
+                            int code = response.code();
+                            //TODO: add a toast
+                            //TODO: retry if it doesn't works
+                        }
+                    }
+
+                    @Override
+                    public void onNext(Forecast forecast) {
+                        updateForecast(forecast);
+                    }
+                });
     }
 }
