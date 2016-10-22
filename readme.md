@@ -15,3 +15,5 @@ things to do with more time
 - city selection with autocomplete
 - setting view for selection of units (imperial/metric)
 - we should read the current weather api and then compose the result with the forecast
+- the floating icon is used to toggle between F and C
+drawables are taken from https://materialdesignicons.com/

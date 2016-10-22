@@ -4,14 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/scrollview"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="it.alessioricco.sunny.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
-        android:text="" />
+    <LinearLayout
+        android:id="@+id/vertical_layout_temperatures"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!--&lt;!&ndash; TODO: implement an horizontal scrollbar with days &ndash;&gt;-->
+        <!--<include layout="@layout/horizontal_temperatures" />-->
+        <!---->
+
+    </LinearLayout>
 
 </android.support.v4.widget.NestedScrollView>

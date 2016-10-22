@@ -8,6 +8,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.inject.Inject;
 
@@ -16,6 +24,7 @@ import butterknife.InjectView;
 import dagger.ObjectGraph;
 import it.alessioricco.sunny.injection.ObjectGraphSingleton;
 import it.alessioricco.sunny.models.Forecast;
+import it.alessioricco.sunny.models.ForecastItem;
 import it.alessioricco.sunny.models.Settings;
 import it.alessioricco.sunny.services.OpenWeatherService;
 import retrofit2.adapter.rxjava.HttpException;
@@ -44,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
     @InjectView(R.id.toolbar_layout)
     android.support.design.widget.CollapsingToolbarLayout toolbarLayout;
 
+    @InjectView(R.id.vertical_layout_temperatures)
+    LinearLayout linearLayoutTemperatures;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +74,11 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        // the fab in not visible because is ugly.
+        // was used to test the forecast update with another unit
+        // when visible is a toggle button between imperial and metric units
+        fab.setVisibility(View.GONE);
 
         // dagger init
         ObjectGraph objectGraph = ObjectGraphSingleton.getInstance();
@@ -178,6 +195,37 @@ public class MainActivity extends AppCompatActivity {
         // show the forecasts on screen
         final String title = String.format("%s %s", forecast.getCity().getName(), formatTemperature(temp));
         toolbarLayout.setTitle(title);
+
+        this.linearLayoutTemperatures.removeAllViews();
+        for(ForecastItem item: forecast.getList()) {
+            final LinearLayout container = (LinearLayout)getLayoutInflater().inflate(R.layout.temperature, null);
+
+            final TextView temperature = (TextView) container.findViewById(R.id.temperature);
+            if (temperature != null) {
+                temperature.setText(String.format("%s", formatTemperature((long)item.getMain().getTemp())));
+            }
+
+            final TextView temperatureDate = (TextView) container.findViewById(R.id.temperature_date);
+            if (temperatureDate != null) {
+                String tempDate = "";
+
+                SimpleDateFormat dt = new SimpleDateFormat("dd MMM hh:00");
+                Date date = new Date(item.getDt()*1000);
+                tempDate = dt.format(date);
+
+                temperatureDate.setText(String.format("%s",tempDate));
+            }
+
+            final TextView temperatureWeather = (TextView) container.findViewById(R.id.temperature_weather);
+            if (temperatureWeather != null) {
+                String tempWeather = item.getWeather().get(0).getDescription();
+                temperatureWeather.setText(String.format("%s",tempWeather));
+            }
+
+            this.linearLayoutTemperatures.addView(container);
+        }
+
+
     }
 
 

@@ -27,10 +27,10 @@ public final class MainApp extends Application {
         }
 
         // Load custom fonts
-        CalligraphyConfig.initDefault(
-                new CalligraphyConfig.Builder().setDefaultFontPath("fonts/Lato-Black.ttf")
-                        .setFontAttrId(R.attr.fontPath)
-                        .build());
+//        CalligraphyConfig.initDefault(
+//                new CalligraphyConfig.Builder().setDefaultFontPath("fonts/Lato-Black.ttf")
+//                        .setFontAttrId(R.attr.fontPath)
+//                        .build());
 
     }
 
