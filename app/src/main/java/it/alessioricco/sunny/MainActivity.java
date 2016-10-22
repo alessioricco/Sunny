@@ -9,7 +9,22 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import javax.inject.Inject;
+
+import butterknife.ButterKnife;
+import dagger.ObjectGraph;
+import it.alessioricco.sunny.injection.ObjectGraphSingleton;
+import it.alessioricco.sunny.services.OpenWeatherService;
+import rx.Subscription;
+import rx.subscriptions.CompositeSubscription;
+
 public class MainActivity extends AppCompatActivity {
+
+    // dagger
+    @Inject
+    OpenWeatherService weatherService;
+
+    protected CompositeSubscription compositeSubscription = new CompositeSubscription();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,10 +37,15 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
             }
         });
+
+        // dagger init
+        ObjectGraph objectGraph = ObjectGraphSingleton.getInstance();
+        objectGraph.inject(this);
+        ButterKnife.inject(this);
     }
 
     @Override
@@ -47,5 +67,39 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void SnackBar(final View view, final String message) {
+        Snackbar.make(view, message, Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
+    }
+
+    /**
+     * https://github.com/ReactiveX/RxJava/wiki/The-RxJava-Android-Module
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        compositeSubscription.add(asyncUpdateForecast());
+
+    }
+
+    /**
+     * call the service, retrieve the results and draw the results
+     * @return
+     */
+    private Subscription asyncUpdateForecast(){
+        return new Subscription() {
+            @Override
+            public void unsubscribe() {
+
+            }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return false;
+            }
+        };
     }
 }

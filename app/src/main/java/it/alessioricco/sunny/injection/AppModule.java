@@ -10,6 +10,7 @@ import it.alessioricco.sunny.MainActivity;
 import it.alessioricco.sunny.MainApp;
 import it.alessioricco.sunny.api.HttpClientFactory;
 import it.alessioricco.sunny.api.RestAdapterFactory;
+import it.alessioricco.sunny.services.OpenWeatherService;
 
 /**
  * Created by alessioricco on 22/10/2016.
@@ -18,7 +19,9 @@ import it.alessioricco.sunny.api.RestAdapterFactory;
 @Module(
         injects = {
                 MainApp.class,
-                MainActivity.class
+                MainActivity.class,
+                RestAdapterFactory.class,
+                OpenWeatherService.class
         },
         library = true)
 
