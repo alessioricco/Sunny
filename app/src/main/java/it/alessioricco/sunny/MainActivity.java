@@ -168,7 +168,8 @@ public class MainActivity extends AppCompatActivity {
     private long getCurrentCityID() {
         //todo: for now is hardcoded but must be configurable
         //return Environment.CORK_CITYID;
-        return Long.parseLong( Settings.getPreferredLocation(getApplicationContext()));
+        Long cityId = Long.parseLong( Settings.getPreferredLocation(getApplicationContext()));
+        return cityId == null ? Environment.CORK_CITYID : cityId;
     }
 
     /**
