@@ -8,6 +8,8 @@ import dagger.Module;
 import dagger.Provides;
 import it.alessioricco.sunny.MainActivity;
 import it.alessioricco.sunny.MainApp;
+import it.alessioricco.sunny.api.HttpClientFactory;
+import it.alessioricco.sunny.api.RestAdapterFactory;
 
 /**
  * Created by alessioricco on 22/10/2016.
@@ -46,5 +48,11 @@ public class AppModule {
         {/* do nothing */}
     }
 
+    @Provides @Singleton public OkHttpClient providesOkHttpClient() {
+        return new HttpClientFactory().getHttpClient();
+    }
 
+    @Provides @Singleton public RestAdapterFactory provideRestAdapter() {
+        return new RestAdapterFactory();
+    }
 }
