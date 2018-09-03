@@ -15,4 +15,10 @@ public interface OpenWeatherAPI {
 
     @GET("/data/2.5/forecast")
     Observable<Forecast> getForecast(@Query("id") long id, @Query("units") String unit, @Query("APPID") String appid);
+
+    @GET("/data/2.5/forecast")
+    Observable<Forecast> getForecastByCity(@Query("q") String q, @Query("units") String unit, @Query("APPID") String appid);
+
+    @GET("/data/2.5/forecast")
+    Observable<Forecast> getForecastByCoord(@Query("q") String q, @Query("units") String unit, @Query("APPID") String appid);
 }

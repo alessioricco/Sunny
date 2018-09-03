@@ -173,6 +173,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * get the current selected city name
+     * @return
+     */
+    private String getCurrentCityName() {
+        //todo: for now is hardcoded but must be configurable
+        //return Environment.CORK_CITYID;
+        String cityName = Settings.getPreferredLocation(getApplicationContext());
+        return cityName == null ? "Rome,it" : cityName;
+    }
+
+    /**
      * format the temperature using the current selected unit
      * @param temp
      * @return
@@ -197,7 +208,9 @@ public class MainActivity extends AppCompatActivity {
      * @return
      */
     private String getCurrentCityBackground(final Forecast forecast) {
-        return "http://d2f0ora2gkri0g.cloudfront.net/bkpam2216982_cork-city.jpg";
+        //https://api.teleport.org/api/urban_areas/slug:london/images/
+        //return "http://d2f0ora2gkri0g.cloudfront.net/bkpam2216982_cork-city.jpg";
+        return "https://d13k13wj6adfdf.cloudfront.net/urban_areas/london-12fdfd9fcf.jpg";
     }
 
 
@@ -287,9 +300,10 @@ public class MainActivity extends AppCompatActivity {
         //http://api.openweathermap.org/data/2.5/forecast?id=2965140&appid=f32f1f5e85b0f12bdaeefcf83e1fbd7d
         //todo: this should be taken by the current gps location
         final String units = getCurrentUnits();
-        final long city = getCurrentCityID();
-        final Observable<Forecast> observable = weatherService.getForecast(city, units);
-
+        //final long city = getCurrentCityID();
+        //final Observable<Forecast> observable = weatherService.getForecast(city, units);
+        final String city = getCurrentCityName();
+        final Observable<Forecast> observable = weatherService.getForecastByCity(city, units);
         return observable
 
                 .subscribeOn(Schedulers.io()) // optional if you do not wish to override the default behavior

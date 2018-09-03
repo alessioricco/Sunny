@@ -38,4 +38,11 @@ public class OpenWeatherService {
         return api.getForecast(id, units, Environment.OPENWEATHER_API_APPID);
     }
 
+    public Observable<Forecast> getForecastByCity(final String q, final String units) {
+
+        final OpenWeatherAPI api = OpenWeatherAPIFactory.createWeatherAPI(RestAdapterFactory.getJSONRestAdapter());
+
+        return api.getForecastByCity(q, units, Environment.OPENWEATHER_API_APPID);
+    }
+
 }
