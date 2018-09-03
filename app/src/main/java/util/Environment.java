@@ -21,7 +21,7 @@ public class Environment {
     public static final String OPENWEATHER_API_APPID = "f32f1f5e85b0f12bdaeefcf83e1fbd7d";
 
     //todo: implement a geolocation service instead of use a predefined value
-    public static final long CORK_CITYID = 2965140;
+    //public static final long CORK_CITYID = 2965140;
 
 
 

@@ -165,12 +165,12 @@ public class MainActivity extends AppCompatActivity {
      * get the current selected city
      * @return
      */
-    private long getCurrentCityID() {
-        //todo: for now is hardcoded but must be configurable
-        //return Environment.CORK_CITYID;
-        Long cityId = Long.parseLong( Settings.getPreferredLocation(getApplicationContext()));
-        return cityId == null ? Environment.CORK_CITYID : cityId;
-    }
+//    private long getCurrentCityID() {
+//        //todo: for now is hardcoded but must be configurable
+//        //return Environment.CORK_CITYID;
+//        Long cityId = Long.parseLong( Settings.getPreferredLocation(getApplicationContext()));
+//        return cityId == null ? Environment.CORK_CITYID : cityId;
+//    }
 
     /**
      * get the current selected city name
@@ -230,12 +230,13 @@ public class MainActivity extends AppCompatActivity {
         toolbarLayout.setTitle(title);
 
         //todo: we have to find a service with better images (weather or city)
-        String url = getCurrentCityBackground(forecast);
-        Picasso.with(getApplicationContext())
-                .load(url)
-                .into(toolbarImage);
+//        String url = getCurrentCityBackground(forecast);
+//        Picasso.with(getApplicationContext())
+//                .load(url)
+//                .into(toolbarImage);
 
         this.linearLayoutTemperatures.removeAllViews();
+        boolean justOneTime = true;
         for(ForecastItem item: forecast.getList()) {
             final LinearLayout container = (LinearLayout)getLayoutInflater().inflate(R.layout.temperature, null);
 
@@ -262,11 +263,19 @@ public class MainActivity extends AppCompatActivity {
             }
 
             final ImageView temperatureIcon = (ImageView) container.findViewById(R.id.temperature_icon);
-            url = String.format("%s%s.png", Environment.OPENWEATHER_IMG_URL, item.getWeather().get(0).getIcon());
+            String url = String.format("%s%s.png", Environment.OPENWEATHER_IMG_URL, item.getWeather().get(0).getIcon());
             //TODO: use placeholders
             Picasso.with(getApplicationContext())
                     .load(url)
                     .into(temperatureIcon);
+
+//            if (justOneTime) {
+//                justOneTime = false;
+//                // It's cached
+//                Picasso.with(getApplicationContext())
+//                        .load(url)
+//                        .into(toolbarImage);
+//            }
 
             this.linearLayoutTemperatures.addView(container);
         }

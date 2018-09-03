@@ -30,12 +30,12 @@
     <string name="pref_units_imperial" translatable="false">@string/unit_imperial</string>
 
     <!-- Label for the location preference [CHAR LIMIT=30] -->
-    <string name="pref_location_label">Location</string>
+    <string name="pref_location_label">City,Country Code (eg. London,UK)</string>
 
     <!-- Key name for storing location in SharedPreferences [CHAR LIMIT=NONE] -->
     <string name="pref_location_key" translatable="false">location</string>
 
     <!-- Default postal code for location preference [CHAR LIMIT=NONE] -->
-    <string name="pref_location_default" translatable="false">2965140</string>
+    <string name="pref_location_default" translatable="false">London, UK</string>
 
 </resources>
