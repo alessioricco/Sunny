@@ -12,7 +12,7 @@ import lombok.Setter;
  * {"speed":5.71,"deg":229.501}
  */
 
-class Wind implements Serializable {
+public class Wind implements Serializable {
     @Getter @Setter float speed;
     @Getter @Setter float deg;
 }

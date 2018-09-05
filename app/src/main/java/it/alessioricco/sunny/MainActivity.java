@@ -27,6 +27,7 @@ import it.alessioricco.sunny.injection.ObjectGraphSingleton;
 import it.alessioricco.sunny.models.Forecast;
 import it.alessioricco.sunny.models.ForecastItem;
 import it.alessioricco.sunny.models.Settings;
+import it.alessioricco.sunny.models.Wind;
 import it.alessioricco.sunny.services.OpenWeatherService;
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Observable;
@@ -188,8 +189,8 @@ public class MainActivity extends AppCompatActivity {
      * @param temp
      * @return
      */
-    private String formatTemperature(long temp) {
-        return String.format("%d%s", temp, getCurrentUnitsToDisplay());
+    private String formatTemperature(float temp) {
+        return String.format("%.1f%s", temp, getCurrentUnitsToDisplay());
     }
 
     /**
@@ -207,11 +208,11 @@ public class MainActivity extends AppCompatActivity {
      * @param forecast
      * @return
      */
-    private String getCurrentCityBackground(final Forecast forecast) {
-        //https://api.teleport.org/api/urban_areas/slug:london/images/
-        //return "http://d2f0ora2gkri0g.cloudfront.net/bkpam2216982_cork-city.jpg";
-        return "https://d13k13wj6adfdf.cloudfront.net/urban_areas/london-12fdfd9fcf.jpg";
-    }
+//    private String getCurrentCityBackground(final Forecast forecast) {
+//        //https://api.teleport.org/api/urban_areas/slug:london/images/
+//        //return "http://d2f0ora2gkri0g.cloudfront.net/bkpam2216982_cork-city.jpg";
+//        return "https://d13k13wj6adfdf.cloudfront.net/urban_areas/london-12fdfd9fcf.jpg";
+//    }
 
 
     /**
@@ -223,45 +224,102 @@ public class MainActivity extends AppCompatActivity {
         if (forecast.getList() == null) return;
 
         // this value should be retrieved by another api call (current weather)
-        final long temp = (long)forecast.getList().get(0).getMain().getTemp();
+        final float temp = forecast.getList().get(0).getMain().getTemp();
+        final String tempWeather = forecast.getList().get(0).getWeather().get(0).getDescription();
 
         // show the forecasts on screen
         final String title = String.format("%s %s", forecast.getCity().getName(), formatTemperature(temp));
         toolbarLayout.setTitle(title);
 
-        //todo: we have to find a service with better images (weather or city)
-//        String url = getCurrentCityBackground(forecast);
-//        Picasso.with(getApplicationContext())
-//                .load(url)
-//                .into(toolbarImage);
 
         this.linearLayoutTemperatures.removeAllViews();
-        boolean justOneTime = true;
-        for(ForecastItem item: forecast.getList()) {
-            final LinearLayout container = (LinearLayout)getLayoutInflater().inflate(R.layout.temperature, null);
+
+        // ADD HEADER
+        {
+            final LinearLayout container = (LinearLayout) getLayoutInflater().inflate(R.layout.temperature, null);
 
             final TextView temperature = (TextView) container.findViewById(R.id.temperature);
             if (temperature != null) {
-                temperature.setText(String.format("%s", formatTemperature((long)item.getMain().getTemp())));
+                temperature.setText("Temp");
+            }
+            final TextView windSpeed = (TextView) container.findViewById(R.id.wind);
+            if (windSpeed != null) {
+                windSpeed.setText("Wind");
+            }
+            final TextView pressure = (TextView) container.findViewById(R.id.pressure);
+            if (pressure != null) {
+                pressure.setText("Pressure");
+            }
+            final TextView temperatureDate = (TextView) container.findViewById(R.id.temperature_date);
+            if (temperatureDate != null) {
+                temperatureDate.setText("Time");
+            }
+            final TextView temperatureDayMonth = (TextView) container.findViewById(R.id.temperature_day);
+            if (temperatureDayMonth != null) {
+                temperatureDayMonth.setText("Date");
+            }
+            this.linearLayoutTemperatures.addView(container);
+        }
+
+        // ADD ROWS
+        boolean justOneTime = true;
+        String currentDay = "";
+        for(ForecastItem item: forecast.getList()) {
+            final LinearLayout container = (LinearLayout)getLayoutInflater().inflate(R.layout.temperature, null);
+
+            // TEMPERATURE
+            final TextView temperature = (TextView) container.findViewById(R.id.temperature);
+            if (temperature != null) {
+                temperature.setText(String.format("%s", formatTemperature(item.getMain().getTemp())));
             }
 
+            // WIND
+            final TextView windSpeed = (TextView) container.findViewById(R.id.wind);
+            if (windSpeed != null) {
+                windSpeed.setText(String.format("%.1f m/s", item.getWind().getSpeed() ));
+            }
+
+            // Pressure
+            final TextView pressure = (TextView) container.findViewById(R.id.pressure);
+            if (pressure != null) {
+                pressure.setText(String.format("%.1f", item.getMain().getPressure() ));
+            }
+
+            // HOUR
             final TextView temperatureDate = (TextView) container.findViewById(R.id.temperature_date);
             if (temperatureDate != null) {
                 String tempDate = "";
 
-                SimpleDateFormat dt = new SimpleDateFormat("dd MMM hh:00");
+                //SimpleDateFormat dt = new SimpleDateFormat("dd MMM hh:00");
+
+                //HOUR
+                SimpleDateFormat dt = new SimpleDateFormat("HH:00");
                 Date date = new Date(item.getDt()*1000);
                 tempDate = dt.format(date);
-
                 temperatureDate.setText(String.format("%s",tempDate));
+
             }
 
-            final TextView temperatureWeather = (TextView) container.findViewById(R.id.temperature_weather);
-            if (temperatureWeather != null) {
-                String tempWeather = item.getWeather().get(0).getDescription();
-                temperatureWeather.setText(String.format("%s",tempWeather));
+            //DATE
+            final TextView temperatureDayMonth = (TextView) container.findViewById(R.id.temperature_day);
+            if (temperatureDayMonth != null) {
+                String tempDate = "";
+
+                //SimpleDateFormat dt = new SimpleDateFormat("dd MMM hh:00");
+
+                SimpleDateFormat dt = new SimpleDateFormat("dd MMM");
+                Date date = new Date(item.getDt()*1000);
+                tempDate = dt.format(date);
+                if (currentDay.equalsIgnoreCase(tempDate)) {
+                    temperatureDayMonth.setVisibility(View.INVISIBLE);
+                } else {
+                    currentDay = tempDate;
+                }
+                temperatureDayMonth.setText(String.format("%s",tempDate));
+
             }
 
+            // ICON
             final ImageView temperatureIcon = (ImageView) container.findViewById(R.id.temperature_icon);
             String url = String.format("%s%s.png", Environment.OPENWEATHER_IMG_URL, item.getWeather().get(0).getIcon());
             //TODO: use placeholders
@@ -269,13 +327,13 @@ public class MainActivity extends AppCompatActivity {
                     .load(url)
                     .into(temperatureIcon);
 
-//            if (justOneTime) {
-//                justOneTime = false;
-//                // It's cached
-//                Picasso.with(getApplicationContext())
-//                        .load(url)
-//                        .into(toolbarImage);
-//            }
+            if (justOneTime) {
+                justOneTime = false;
+                // It's cached
+                Picasso.with(getApplicationContext())
+                        .load(url)
+                        .into(toolbarImage);
+            }
 
             this.linearLayoutTemperatures.addView(container);
         }
