@@ -1,5 +1,7 @@
 Some notes about the source code
 
+video.mov is a demo of the app
+
 it's an android studio project it should be run with no problems with the 2.2.2 version
 be careful on lombok plugin it should be configured in the Default settings for annotation processing
 
@@ -11,20 +13,14 @@ then if I will have time, I will add other services for geolocation and reverse 
 I will put in the res/raw folder for future use (done)
 
 things to do with more time
-- unit test test test test test
+- more unit tests
 - unit test and roboelectric/moquito for testing ui
 - clean dead code
 - a good class for exceptions
 - progress bars
 - manage current position from network or gps
 - city selection with autocomplete
--the forecasts should be displayed with no repeated dates
-(much better two scroll objects:
-    one horizontal for the days with some short info that could be selected and
-    one vertical with the details of the selected date
-    i.e. yahoo or default ios app
-    )
-- we should read the current weather api and then compose the result with the forecast api
+-the forecasts should be displayed with no repeated dates- we should read the current weather api and then compose the result with the forecast api
 - add placeholders for picasso image download
 - methods as getCurrentCityBackground(), getCurrentCityID() should be based on
 services that retrieve Observable Objects that should be combined for deliver the desired results
